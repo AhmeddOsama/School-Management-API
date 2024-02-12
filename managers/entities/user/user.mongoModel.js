@@ -17,7 +17,7 @@ const user = new mongoose.Schema({
     role: {
         type: String,
         required: true,
-        enum: ['admin', 'superadmin'] // Use the "enum" validation to restrict the role to specific values
+        enum: ["school admin", "superadmin"] 
       }
   });
 

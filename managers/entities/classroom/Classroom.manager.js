@@ -8,7 +8,7 @@ module.exports = class Clasroom {
         this.validators          = validators; 
         this.mongomodels         = mongomodels;
         this.httpExposed         = ['createClassroom'];
-        
+        this.authorised          = ['school admin']
     }
 
     async createClassroom({__longToken,__isAuthorised, __device,name}){

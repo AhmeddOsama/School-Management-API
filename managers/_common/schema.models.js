@@ -21,7 +21,7 @@ module.exports = {
     role: {
         path: 'role',
         type: 'string',
-        oneOf: ['admin', 'superadmin'] ,
+        oneOf: ["school admin", "superadmin"] 
 
     },
     title: {
