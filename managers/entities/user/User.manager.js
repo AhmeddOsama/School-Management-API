@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 module.exports = class User { 
 
     constructor({utils, cache, config, cortex, managers, validators, mongomodels }={}){
@@ -24,11 +26,13 @@ module.exports = class User {
             throw Error('User exists') //to handle errors
         }
         // Creation Logic
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+        user.password=hashedPassword
         let createdUser     = await this.mongomodels.user.create(user)
         let longToken       = this.tokenManager.genLongToken({userId: createdUser._id, userKey: createdUser.key });
         // console.log(createdUser.toObject(),'ssssss')
         // Response
-        const {_id, __v, pass, ...userDetails } = createdUser.toObject();
+        const {_id, __v, password:pass, ...userDetails } = createdUser.toObject();
 
         return {
             userDetails, 
