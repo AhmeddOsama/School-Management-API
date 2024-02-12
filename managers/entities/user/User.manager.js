@@ -10,13 +10,12 @@ module.exports = class User {
         this.tokenManager        = managers.token;
         this.usersCollection     = "users";
         this.userExposed         = ['createUser'];
-        this.httpExposed         = ['createUser'];
+        this.httpExposed         = ['login','createUser','delete=deleteUser'];
 
     }
 
     async createUser({username, email, password,role}){
         const user = {username, email, password,role};
-        console.log('user  ',user)
         // Data validation
         let result = await this.validators.user.createUser(user);
         if(result) return result;
@@ -39,4 +38,38 @@ module.exports = class User {
         };
     }
 
+    async deleteUser({__longToken,username}){
+        const decoded = __longToken
+        const body= {username}
+
+        if(decoded.userKey!=username){
+                throw Error('User Can only delete his user')
+        }
+        const result = await  this.mongomodels.user.deleteOne({ _id: decoded.userId });
+        return {
+            
+        }
+
+    }
+    
+    async login({username,password}){
+        const body = {username,password}
+        let result = await this.validators.user.login(body);
+        if(result) return result;
+        
+        const user = await  this.mongomodels.user.findOne({ username });
+        if(!user){
+            throw Error('Invalid Username or Password')
+        }
+        const correctPassword = await bcrypt.compare(password, user.password);
+        if(!correctPassword){
+            throw Error('Invalid Username or Password')
+        }
+
+        let longToken= this.tokenManager.genLongToken({userId: user._id, userKey: user.username ,role:user.role});
+        return {
+            longToken 
+        };
+
+    }
 }

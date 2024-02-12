@@ -19,6 +19,22 @@ module.exports = {
             required:true
         }
     ],
+    deleteUser: [
+        {
+            model: 'username',
+            required: true,
+        },
+    ],
+    login: [
+        {
+            model: 'username',
+            required: true,
+        },
+        {
+            model: 'password',
+            required: true,
+        },
+    ],
 }
 
 
