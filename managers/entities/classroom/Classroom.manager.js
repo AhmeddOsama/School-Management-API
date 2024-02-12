@@ -79,7 +79,7 @@ module.exports = class Clasroom {
                 selfHandleResponse:{
                     "ok": false,
                     "message": "Invalid Classroom ",
-                    "code":401
+                    "code":404
                 }
             }
         }

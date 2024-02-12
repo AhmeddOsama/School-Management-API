@@ -94,7 +94,7 @@ module.exports = class School {
                 selfHandleResponse:{
                     "ok": false,
                     "message": "Invalid School ",
-                    "code":401
+                    "code":404
                 }
             }
         }
