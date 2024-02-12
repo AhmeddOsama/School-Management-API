@@ -29,6 +29,21 @@ module.exports = {
         type: 'string',
         length: {min: 3, max: 300}
     },
+    name: {
+        path: "name",
+        type: "String",
+        length: { min: 3, max: 50 },
+    },
+    schoolname: {
+        path: 'schoolname',
+        type: 'string',
+        length: {min: 3, max: 300}
+    },
+    classnumbers: {
+        path: 'classnumbers',
+        type: 'string',
+        length: {min: 3, max: 300}
+    },
     label: {
         path: 'label',
         type: 'string',
@@ -60,6 +75,10 @@ module.exports = {
     },
     price: {
         path: 'price',
+        type: 'number',
+    },
+    age: {
+        path: 'age',
         type: 'number',
     },
     avatar: {
