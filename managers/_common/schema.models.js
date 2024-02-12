@@ -90,6 +90,17 @@ module.exports = {
         type: 'String',
         length: {min: 3, max:250},
     },
+    studentId: {
+        type: 'String',
+        length: {min: 3, max:250},
+        path:'studentId'
+    },
+    classroomId: {
+        type: 'String',
+        length: {min: 3, max:250},
+        path:'classroomId'
+
+    },
     paragraph: {
         type: 'String',
         length: {min: 3, max:10000},

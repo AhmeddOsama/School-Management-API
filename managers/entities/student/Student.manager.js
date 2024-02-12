@@ -8,23 +8,31 @@ module.exports = class Student {
         this.validators          = validators; 
         this.mongomodels         = mongomodels;
         this.tokenManager        = managers.token;
-        this.usersCollection     = "students";
-        this.httpExposed         = ['createStudent'];
-
+        this.httpExposed         = ['createStudent','get=getAll'];
+        this.authorised          = ['school admin']
     }
 
-    async createStudent({name, age}){
-        const user = {name, age};
+    async createStudent({__longToken,__isAuthorised, name, age}){
+        const student = {name, age};
 
-        let createdUser     = await this.mongomodels.user.create(user)
-        const {_id, __v, password:pass, ...userDetails } = createdUser.toObject();
-        let longToken       = this.tokenManager.genLongToken({userId: createdUser._id, userKey: createdUser.username ,role:createdUser.role});
+        let result = await this.validators.student.createStudent(student);
+        if(result) return result;
+
+        let createdStudent     = await this.mongomodels.student.create(student)
+        const { __v, ...studentDetails } = createdStudent.toObject();
 
 
         return {
-            userDetails, 
-            longToken 
+            studentDetails, 
         };
     }
+
+    async getAll({__longToken,__isAuthorised}){
+           const students = await this.mongomodels.student.find().select('-__v')
+           return {
+            students, 
+        };
+    }
+
 
 }

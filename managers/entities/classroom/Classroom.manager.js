@@ -7,7 +7,7 @@ module.exports = class Clasroom {
         this.cortex              = cortex;
         this.validators          = validators; 
         this.mongomodels         = mongomodels;
-        this.httpExposed         = ['createClassroom'];
+        this.httpExposed         = ['createClassroom','put=addStudentToClassrooom'];
         this.authorised          = ['school admin']
     }
 
@@ -18,7 +18,7 @@ module.exports = class Clasroom {
 
         let createdClass  = await this.mongomodels.Classroom.create(classroom)
 
-        const {_id, __v,  ...classDetails } = createdClass.toObject();
+        const { __v,  ...classDetails } = createdClass.toObject();
 
 
         return {
@@ -26,4 +26,26 @@ module.exports = class Clasroom {
         };
     }
 
+    async addStudentToClassrooom({__longToken,__isAuthorised, __device,classroomId,studentId}){
+        const body = {classroomId,studentId};
+        let result = await this.validators.classroom.addStudentToClassrooom(body);
+        if(result) return result;
+
+
+        const classroom = await this.mongomodels.Classroom.findById(classroomId);
+        const student =  await this.mongomodels.student.findById(studentId);
+        if (!classroom || !student) {
+            throw new Error('Invalid Classroom or Student');
+        }
+
+        classroom.students.push(student);
+        await classroom.save();
+
+        const {_id, __v,  ...classDetails } = classroom.toObject();
+
+
+        return {
+            classDetails, 
+        };
+    }
 }

@@ -8,6 +8,16 @@ module.exports = {
         },
         
     ],
+    addStudentToClassrooom: [
+        {
+            model: 'classroomId',
+            required: true,
+        },
+        {
+            model: 'studentId',
+            required: true,
+        },
+    ],
 }
 
 
