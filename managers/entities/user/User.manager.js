@@ -8,6 +8,8 @@ module.exports = class User {
         this.tokenManager        = managers.token;
         this.usersCollection     = "users";
         this.userExposed         = ['createUser'];
+        this.httpExposed         = ['createUser'];
+
     }
 
     async createUser({username, email, password}){
