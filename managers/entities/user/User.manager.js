@@ -14,7 +14,7 @@ module.exports = class User {
 
     }
 
-    async createUser({username, email, password,role}){
+    async createUser({__validate,username, email, password,role}){
         const user = {username, email, password,role};
         // Data validation
         let result = await this.validators.user.createUser(user);
@@ -29,7 +29,7 @@ module.exports = class User {
         user.password=hashedPassword
         let createdUser     = await this.mongomodels.user.create(user)
         const {_id, __v, password:pass, ...userDetails } = createdUser.toObject();
-        let longToken       = this.tokenManager.genLongToken({userId: createdUser._id, userKey: createdUser.username ,role:createdUser.role});
+        let longToken = this.tokenManager.genLongToken({userId: createdUser._id, userKey: createdUser.username ,role:createdUser.role});
 
 
         return {

@@ -163,6 +163,8 @@ module.exports = class ApiHandler {
             if(!result)result={}
 
             if(result.selfHandleResponse){
+                return this.managers.responseDispatcher.dispatch(res, result.selfHandleResponse);
+
                 // do nothing if response handeled
             } else {
                 

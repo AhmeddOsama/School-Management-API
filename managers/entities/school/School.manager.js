@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { result } = require('lodash');
 
 module.exports = class School { 
 
@@ -7,15 +8,25 @@ module.exports = class School {
         this.cortex              = cortex;
         this.validators          = validators; 
         this.mongomodels         = mongomodels;
-        this.httpExposed         = ['createSchool','put=addClassroomToSchool','delete=removeClassroomFromSchool','delete=deleteSchool'];
+        this.httpExposed         = ['get=getClassroomsInSchool','createSchool','put=addClassroomToSchool','delete=removeClassroomFromSchool','delete=deleteSchool','get=getSchools'];
         this.authorised          = ['superadmin']
+        this.managers = managers
     }
 
-    async createSchool({__longToken,__isAuthorised, __device,name}){
+    async createSchool({__longToken,__isAuthorised,__validate, __device,name}){
         const school = {name};
-        let result = await this.validators.school.createSchool(school);
-        if(result) return result;
+        const existingSchool = await this.mongomodels.school.findOne({ name:name })
 
+        if(existingSchool){
+                const result = {
+                    selfHandleResponse:{
+                        "ok": false,
+                        "message": "School Already Exists!",
+                        "code":409
+                    }
+                }
+                return result
+        }
         let createdSchool  = await this.mongomodels.school.create(school)
 
         const { __v,  ...schoolDetails } = createdSchool.toObject();
@@ -25,33 +36,40 @@ module.exports = class School {
         };
     }
 
-    async addClassroomToSchool({__longToken,__isAuthorised, __device,classroomId,schoolId}){
+    async addClassroomToSchool({__longToken,__isAuthorised,__validate,classroomId,schoolId}){
         const body = {classroomId,schoolId};
-        let result = await this.validators.school.addClassroomToSchool(body);
-        if(result) return result;
-
         const classroom = await this.mongomodels.Classroom.findById(classroomId);
         const school =  await this.mongomodels.school.findById(schoolId);
         if (!classroom || !school) {
-            throw new Error('Invalid Classroom or Student');
+            return result = {
+                selfHandleResponse:{
+                    "ok": false,
+                    "message": "Invalid School or Classoom!",
+                    "code":401
+                }
+            }
         }
 
         school.classrooms.push(classroom);
         await school.save();
-
         const {_id, __v,  ...schoolDetails } = school.toObject();
-        
         return {
             schoolDetails, 
         };
     }   
-    async  removeClassroomFromSchool({__longToken,__isAuthorised, __device, classroomId, schoolId }) {
-        
+    async  removeClassroomFromSchool({__longToken,__isAuthorised,__validate, classroomId, schoolId }) {
+    
             const classroom = await this.mongomodels.Classroom.findById(classroomId);
             const school = await this.mongomodels.school.findById(schoolId);
-            
+
             if (!classroom || !school) {
-                throw new Error('Invalid Classroom or School');
+                return result = {
+                    selfHandleResponse:{
+                        "ok": false,
+                        "message": "Invalid School or Classoom!",
+                        "code":401
+                    }
+                }
             }
     
             const index = school.classrooms.indexOf(classroomId);
@@ -68,17 +86,35 @@ module.exports = class School {
             };
         
     }
-    async  deleteSchool({__longToken,__isAuthorised, __device, schoolId }) {
+    async  deleteSchool({__longToken,__isAuthorised,__validate, __device, schoolId }) {
         
         const result = await  this.mongomodels.school.deleteOne({ _id: schoolId });
 
         if (result.deletedCount === 0) {
-            throw new Error('School not found');
+            return result = {
+                selfHandleResponse:{
+                    "ok": false,
+                    "message": "Invalid School ",
+                    "code":401
+                }
+            }
         }
 
         return {
         };
     
 }
-    
+async  getSchools({__longToken,__isAuthorised }) {
+    const result = await  this.mongomodels.school.find({ }).select('-__v -classrooms')
+    return {
+        result
+    };
+
+}
+async  getClassroomsInSchool({__longToken,__isAuthorised,__validate, __device,schoolId }) {
+    const result = await  this.mongomodels.school.find({ schoolId }).select('classrooms').populate('classrooms') 
+    return {
+        result
+    };
+}
 }
