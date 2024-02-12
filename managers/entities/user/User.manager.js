@@ -12,20 +12,26 @@ module.exports = class User {
 
     }
 
-    async createUser({username, email, password}){
-        const user = {username, email, password};
-
+    async createUser({username, email, password,role}){
+        const user = {username, email, password,role};
+        console.log('user  ',user)
         // Data validation
         let result = await this.validators.user.createUser(user);
         if(result) return result;
-        
+        console.log('asdas',this.mongomodels)
+        const existingUser = await this.mongomodels.user.findOne({ username })
+        if(existingUser){
+            throw Error('User exists') //to handle errors
+        }
         // Creation Logic
-        let createdUser     = {username, email, password}
+        let createdUser     = await this.mongomodels.user.create(user)
         let longToken       = this.tokenManager.genLongToken({userId: createdUser._id, userKey: createdUser.key });
-        
+        // console.log(createdUser.toObject(),'ssssss')
         // Response
+        const {_id, __v, pass, ...userDetails } = createdUser.toObject();
+
         return {
-            user: createdUser, 
+            userDetails, 
             longToken 
         };
     }

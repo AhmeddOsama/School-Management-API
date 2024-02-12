@@ -38,7 +38,7 @@ module.exports = class ApiHandler {
                     /** i is the route present in httpexposed */
                     let method = 'post';
                     let fnName = i;
-                    if(i.includes("=")){ /**if i is get=hello  then method will be v1 and fname hello */
+                    if(i.includes("=")){ /**if i is get=hello  then method will be get and fname hello */
                         let frags = i.split('=');
                         method=frags[0];
                         fnName=frags[1];
@@ -55,7 +55,7 @@ module.exports = class ApiHandler {
                         i=i.replace('}','');
                         return i;
                     })/** params for the route function */
-                    console.log('&&&&&&&&&&&&&',params) 
+                    // console.log('&&&&&&&&&&&&&',params) 
 
                     /** building middlewares stack */
                     

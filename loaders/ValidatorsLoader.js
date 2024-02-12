@@ -22,11 +22,12 @@ module.exports = class ValidatorsLoader {
         const schemes = loader('./managers/**/*.schema.js');
 
         Object.keys(schemes).forEach(sk=>{
-            let pine = new Pine({models: this.models, customValidators: this.customValidators});
+            let pine = new Pine({models: this.models, customValidators: this.customValidators});/*loads models into it */
+            // console.log('Pine ----------------',pine)
             validators[sk] = {};
-            Object.keys(schemes[sk]).forEach(s=>{
-                validators[sk][s] =  async (data)=>{
-                    return (await pine.validate(data, schemes[sk][s]));
+            Object.keys(schemes[sk]).forEach(s=>{ 
+                validators[sk][s] =  async (data)=>{//this makes us able to write validators['user']['createuser'] = validatorfunction that takes data from the req 
+                    return (await pine.validate(data, schemes[sk][s])); //schems[user][createuser]
                 }
                 /** also exports the trimmer function for the same */
                 validators[sk][`${s}Trimmer`] = async (data)=>{
