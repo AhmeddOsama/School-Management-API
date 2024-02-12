@@ -15,6 +15,7 @@ module.exports = ({ meta, config, managers }) =>{
             console.log('failed to decode-2')
             return managers.responseDispatcher.dispatch(res, {ok: false, code:401, errors: 'unauthorized'});
         }
+        req.decoded = decoded
         next(decoded);
     }
 }

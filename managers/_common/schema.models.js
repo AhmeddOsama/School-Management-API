@@ -34,11 +34,7 @@ module.exports = {
         type: "String",
         length: { min: 3, max: 50 },
     },
-    schoolname: {
-        path: 'schoolname',
-        type: 'string',
-        length: {min: 3, max: 300}
-    },
+    
     classnumbers: {
         path: 'classnumbers',
         type: 'string',

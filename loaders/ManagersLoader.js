@@ -8,6 +8,8 @@ const ValidatorsLoader      = require('./ValidatorsLoader');
 const ResourceMeshLoader    = require('./ResourceMeshLoader');
 const utils                 = require('../libs/utils');
 const User                   = require('../managers/entities/user/User.manager')
+const Classroom                   = require('../managers/entities/classroom/Classroom.manager')
+
 const systemArch            = require('../static_arch/main.system');
 const TokenManager          = require('../managers/token/Token.manager');
 const SharkFin              = require('../managers/shark_fin/SharkFin.manager');
@@ -68,7 +70,7 @@ module.exports = class ManagersLoader {
         this.managers.timeMachine         = new TimeMachine(this.injectable);
         this.managers.token               = new TokenManager(this.injectable);
         this.managers.user                = new User(this.injectable)
-
+        this.managers.classroom           = new Classroom(this.injectable)
         /*************************************************************************************************/
         this.managers.mwsExec             = new VirtualStack({ ...{ preStack: [/* '__token', */'__device',] }, ...this.injectable });
         this.managers.userApi             = new ApiHandler({...this.injectable,...{prop:'httpExposed'}});

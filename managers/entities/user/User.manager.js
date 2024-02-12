@@ -20,7 +20,7 @@ module.exports = class User {
         // Data validation
         let result = await this.validators.user.createUser(user);
         if(result) return result;
-        console.log('asdas',this.mongomodels)
+        // console.log('asdas',this.mongomodels)
         const existingUser = await this.mongomodels.user.findOne({ username })
         if(existingUser){
             throw Error('User exists') //to handle errors

@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 
-module.exports = class User { 
+module.exports = class Student { 
 
     constructor({utils, cache, config, cortex, managers, validators, mongomodels }={}){
         this.config              = config;
