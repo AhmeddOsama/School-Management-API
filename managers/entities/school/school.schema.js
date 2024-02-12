@@ -1,23 +1,37 @@
 
 
 module.exports = {
-    createUser: [
+    createSchool: [
         {
-            model: 'username',
+            model: 'name',
+            required: true,
+        },
+    ],
+    addClassroomToSchool: [
+        {
+            model: 'classroomId',
             required: true,
         },
         {
-            model: 'password',
+            model: 'schoolId',
+            required: true,
+        },
+    ],
+    removeClassroomFromSchool: [
+        {
+            model: 'classroomId',
             required: true,
         },
         {
-            model: 'email',
+            model: 'schoolId',
             required: true,
         },
+    ],
+    deleteSchool: [
         {
-            model:'role',
-            required:true
-        }
+            model: 'schoolId',
+            required: true,
+        },
     ],
 }
 

@@ -101,6 +101,12 @@ module.exports = {
         path:'classroomId'
 
     },
+    schoolId: {
+        type: 'String',
+        length: {min: 3, max:250},
+        path:'schoolId'
+
+    },
     paragraph: {
         type: 'String',
         length: {min: 3, max:10000},
