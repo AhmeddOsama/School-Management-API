@@ -58,7 +58,6 @@ module.exports = class ManagersLoader {
     load() {
         this.managers.responseDispatcher  = new ResponseDispatcher();
         // this.managers.liveDb              = new LiveDB(this.injectable);
-        console.log('hi')
 
         const middlewaresLoader           = new MiddlewaresLoader(this.injectable);
         const mwsRepo                     = middlewaresLoader.load();
@@ -71,6 +70,7 @@ module.exports = class ManagersLoader {
         /*************************************************************************************************/
         this.managers.mwsExec             = new VirtualStack({ ...{ preStack: [/* '__token', */'__device',] }, ...this.injectable });
         this.managers.userApi             = new ApiHandler({...this.injectable,...{prop:'httpExposed'}});
+        
         this.managers.userServer          = new UserServer({ config: this.config, managers: this.managers });
 
        

@@ -33,30 +33,33 @@ module.exports = class ApiHandler {
                 // console.log('managers - mk ', this.managers[mk])
                 this.methodMatrix[mk]={};
                 // console.log(`## ${mk}`);
-                this.managers[mk][this.prop].forEach(i=>{
+                this.managers[mk][this.prop].forEach(i=>{ /** checking httpexposed array methods aka routes in each manager */
                     /** creating the method matrix */
+                    /** i is the route present in httpexposed */
                     let method = 'post';
                     let fnName = i;
-                    if(i.includes("=")){
+                    if(i.includes("=")){ /**if i is get=hello  then method will be v1 and fname hello */
                         let frags = i.split('=');
                         method=frags[0];
                         fnName=frags[1];
                     }
-                    if(!this.methodMatrix[mk][method]){
+                    if(!this.methodMatrix[mk][method]){ /** check if a method has been already added to the method manager as each method has an array of routes */
                         this.methodMatrix[mk][method]=[];
                     }
-                    this.methodMatrix[mk][method].push(fnName);
+                    this.methodMatrix[mk][method].push(fnName); /** adds the route to the method */
 
-                    let params = getParamNames(this.managers[mk][fnName], fnName, mk);
+                    let params = getParamNames(this.managers[mk][fnName], fnName, mk);/** token[v1] , httpExposed , Manager */
                     params = params.split(',').map(i=>{
                         i=i.trim();
                         i=i.replace('{','');
                         i=i.replace('}','');
                         return i;
-                    })
+                    })/** params for the route function */
+                    console.log('&&&&&&&&&&&&&',params) 
+
                     /** building middlewares stack */
                     
-                    params.forEach(param=>{
+                    params.forEach(param=>{ /**token.v1_createShortToken */
                         if(!this.mwsStack[`${mk}.${fnName}`]){
                             this.mwsStack[`${mk}.${fnName}`]=[];
                         }
@@ -72,7 +75,8 @@ module.exports = class ApiHandler {
                             }
                         }
                     })
-                    
+                    console.log(`------------mwsStack for ${mk}  ${method} ${fnName} `,this.mwsStack)
+                    console.log('***********************',this.methodMatrix)
                     // console.log(`* ${i} :`, 'args=', params);
 
                 });
@@ -125,9 +129,9 @@ module.exports = class ApiHandler {
     async mw(req, res, next){
 
         let method        = req.method.toLowerCase();
-        let moduleName    = req.params.moduleName;
+        let moduleName    = req.params.moduleName; //* manager name
         let context       = req.params.context;
-        let fnName        = req.params.fnName;
+        let fnName        = req.params.fnName; //* route/
         let moduleMatrix  = this.methodMatrix[moduleName];
 
         /** validate module */
