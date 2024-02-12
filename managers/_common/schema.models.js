@@ -92,18 +92,18 @@ module.exports = {
     },
     studentId: {
         type: 'String',
-        length: {min: 3, max:250},
+        length: {min: 12, max:250},
         path:'studentId'
     },
     classroomId: {
         type: 'String',
-        length: {min: 3, max:250},
+        length: {min: 12, max:250},
         path:'classroomId'
 
     },
     schoolId: {
         type: 'String',
-        length: {min: 3, max:250},
+        length: {min: 12, max:250},
         path:'schoolId'
 
     },
