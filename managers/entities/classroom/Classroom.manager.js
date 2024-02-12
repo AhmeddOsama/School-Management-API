@@ -7,7 +7,7 @@ module.exports = class Clasroom {
         this.cortex              = cortex;
         this.validators          = validators; 
         this.mongomodels         = mongomodels;
-        this.httpExposed         = ['createClassroom','put=addStudentToClassrooom'];
+        this.httpExposed         = ['createClassroom','put=addStudentToClassrooom','delete=deleteClassroom'];
         this.authorised          = ['school admin']
     }
 
@@ -22,7 +22,12 @@ module.exports = class Clasroom {
 
 
         return {
-            classDetails, 
+            selfHandleResponse:{
+                "ok": true,
+                "message": "Successfully Created Classroom ",
+                "code":200,
+                data:classDetails
+            }        
         };
     }
 
@@ -35,17 +40,57 @@ module.exports = class Clasroom {
         const classroom = await this.mongomodels.Classroom.findById(classroomId);
         const student =  await this.mongomodels.student.findById(studentId);
         if (!classroom || !student) {
-            throw new Error('Invalid Classroom or Student');
+            return {
+                selfHandleResponse:{
+                    "ok": false,
+                    "message": "Invalid Student or Classoom!",
+                    "code":401
+                }
+            }
         }
-
+        
+        if (classroom.students.includes(studentId)) {
+            return {
+              selfHandleResponse: {
+                "ok": false,
+                "message": "Student already exists in the Classroom!",
+                "code": 409
+              }
+            };
+          }
         classroom.students.push(student);
-        await classroom.save();
-
-        const {_id, __v,  ...classDetails } = classroom.toObject();
-
-
+        await classroom.save() ;
+        const populatedClassroom = await classroom.populate('students')
         return {
-            classDetails, 
+            selfHandleResponse:{
+                "ok": true,
+                "message": "Successfully Added Student to  Classroom ",
+                "code":200,
+                data:populatedClassroom
+            }        
         };
     }
+
+    async  deleteClassroom({__longToken,__isAuthorised,__validate , classroomId }) {
+        const result = await  this.mongomodels.Classroom.deleteOne({ _id: classroomId });
+
+        if (result.deletedCount === 0) {
+            return  {
+                selfHandleResponse:{
+                    "ok": false,
+                    "message": "Invalid Classroom ",
+                    "code":401
+                }
+            }
+        }
+
+        return   {
+            selfHandleResponse:{
+                "ok": true,
+                "message": "Successfully Deleted Classrooom ",
+                "code":200
+            }
+        }
+    
+}
 }

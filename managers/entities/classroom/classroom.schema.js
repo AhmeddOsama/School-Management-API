@@ -18,6 +18,10 @@ module.exports = {
             required: true,
         },
     ],
+    deleteClassroom:[ {
+        model: 'classroomId',
+        required: true,
+    },]
 }
 
 

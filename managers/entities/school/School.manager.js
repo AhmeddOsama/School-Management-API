@@ -10,7 +10,6 @@ module.exports = class School {
         this.mongomodels         = mongomodels;
         this.httpExposed         = ['get=getClassroomsInSchool','createSchool','put=addClassroomToSchool','delete=removeClassroomFromSchool','delete=deleteSchool','get=getSchools'];
         this.authorised          = ['superadmin']
-        this.managers = managers
     }
 
     async createSchool({__longToken,__isAuthorised,__validate, __device,name}){
