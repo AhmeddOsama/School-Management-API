@@ -8,25 +8,23 @@ module.exports = class School {
         this.cortex              = cortex;
         this.validators          = validators; 
         this.mongomodels         = mongomodels;
-        this.httpExposed         = ['get=getClassroomsInSchool','createSchool','put=addClassroomToSchool','delete=removeClassroomFromSchool','delete=deleteSchool','get=getSchools'];
+        this.httpExposed         = ['put=addSchoolAdmin','get=getClassroomsInSchool','createSchool','put=addClassroomToSchool','delete=removeClassroomFromSchool','delete=deleteSchool','get=getSchools'];
         this.authorised          = ['superadmin']
     }
 
     async createSchool({__longToken,__isAuthorised,__validate, __device,name}){
-        const school = {name};
         const existingSchool = await this.mongomodels.school.findOne({ name:name })
 
         if(existingSchool){
-                const result = {
+                return  {
                     selfHandleResponse:{
                         "ok": false,
                         "message": "School Already Exists!",
                         "code":409
                     }
                 }
-                return result
         }
-        let createdSchool  = await this.mongomodels.school.create(school)
+        let createdSchool  = await this.mongomodels.school.create({name})
 
         const { __v,  ...schoolDetails } = createdSchool.toObject();
 
@@ -34,7 +32,28 @@ module.exports = class School {
             schoolDetails, 
         };
     }
-
+    async addSchoolAdmin({__longToken,__isAuthorised,__validate,name,username}){
+        const school = await this.mongomodels.school.findOne({ name:name })
+        const admin = await this.mongomodels.user.findOne({username })
+        if(!school||!admin||admin.role!='school admin'){
+                return {
+                    selfHandleResponse:{
+                        "ok": false,
+                        "message": "Invalid School or Admin",
+                        "code":409
+                    }
+                }
+        }
+        school.admins.push(admin);
+        await school.save() ;
+        return {
+            selfHandleResponse:{
+                "ok": true,
+                "message": "Admin Addded to school!",
+                "code":200
+            }
+        }
+    }
     async addClassroomToSchool({__longToken,__isAuthorised,__validate,classroomId,schoolId}){
         const body = {classroomId,schoolId};
         const classroom = await this.mongomodels.Classroom.findById(classroomId);

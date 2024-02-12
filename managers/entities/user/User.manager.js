@@ -10,7 +10,7 @@ module.exports = class User {
         this.tokenManager        = managers.token;
         this.usersCollection     = "users";
         this.userExposed         = ['createUser'];
-        this.httpExposed         = ['login','createUser','delete=deleteUser'];
+        this.httpExposed         = ['login','createUser','delete=deleteUser','get=getUserSchools'];
 
     }
 
@@ -38,7 +38,7 @@ module.exports = class User {
         };
     }
 
-    async deleteUser({__longToken,username}){
+    async deleteUser({_validate,__longToken,username}){
         const decoded = __longToken
         const body= {username}
 
@@ -59,17 +59,42 @@ module.exports = class User {
         
         const user = await  this.mongomodels.user.findOne({ username });
         if(!user){
-            throw Error('Invalid Username or Password')
+            return {
+                selfHandleResponse:{
+                    "ok": false,
+                    "message": "Invalid Username or Password",
+                    "code":404
+                }
+            }        
         }
         const correctPassword = await bcrypt.compare(password, user.password);
         if(!correctPassword){
-            throw Error('Invalid Username or Password')
+            return {
+                selfHandleResponse:{
+                    "ok": false,
+                    "message": "Invalid Username or Password",
+                    "code":404
+                }
+            }
         }
 
         let longToken= this.tokenManager.genLongToken({userId: user._id, userKey: user.username ,role:user.role});
         return {
             longToken 
         };
+
+    }
+    async getUserSchools({__longToken}){
+        const decoded = __longToken
+        const schools = await this.mongomodels.school.find({ admins: decoded.userId });        
+        return {
+            selfHandleResponse:{
+                "ok": false,
+                "message": "",
+                "data":schools,
+                "code":200
+            }
+        }
 
     }
 }

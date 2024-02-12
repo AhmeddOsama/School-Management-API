@@ -75,8 +75,8 @@ module.exports = class ApiHandler {
                             }
                         }
                     })
-                    console.log(`------------mwsStack for ${mk}  ${method} ${fnName} `,this.mwsStack)
-                    console.log('***********************',this.methodMatrix)
+                    // console.log(`------------mwsStack for ${mk}  ${method} ${fnName} `,this.mwsStack)
+                    // console.log('***********************',this.methodMatrix)
                     // console.log(`* ${i} :`, 'args=', params);
 
                 });

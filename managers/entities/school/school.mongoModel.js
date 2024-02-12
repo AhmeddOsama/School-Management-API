@@ -6,7 +6,10 @@ const School = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'classroom'
     }],
-    
+    admins:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
 });
 
 module.exports = mongoose.model("School", School)
