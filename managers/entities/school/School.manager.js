@@ -84,10 +84,15 @@ module.exports = class School {
 
         school.classrooms.push(classroom);
         await school.save();
-        const {_id, __v,  ...schoolDetails } = school.toObject();
+        const { __v,  ...schoolDetails } = school.toObject();
         return {
-            schoolDetails, 
-        };
+            selfHandleResponse:{
+                "ok": true,
+                "message": " ",
+                "data":schoolDetails,
+                "code":200
+            }
+        }
     }   
     async  removeClassroomFromSchool({__longToken,__isAuthorised,__protect,__validate, classroomId, schoolId }) {
     
@@ -111,12 +116,16 @@ module.exports = class School {
     
             await school.save();
     
-            const { _id, __v, ...schoolDetails } = school.toObject();
+            const {  __v, ...schoolDetails } = school.toObject();
     
             return {
-                schoolDetails,
-            };
-        
+                selfHandleResponse:{
+                    "ok": true,
+                    "message": " ",
+                    "data":schoolDetails,
+                    "code":200
+                }
+            }
     }
     async  deleteSchool({__longToken,__isAuthorised,__protect,__validate, __device, schoolId }) {
         
