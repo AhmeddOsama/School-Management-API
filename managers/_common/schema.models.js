@@ -93,19 +93,22 @@ module.exports = {
     studentId: {
         type: 'String',
         length: {min: 12, max:250},
-        path:'studentId'
+        path:'studentId',
+        custom:'objectId'
+
     },
     classroomId: {
         type: 'String',
         length: {min: 12, max:250},
-        path:'classroomId'
+        path:'classroomId',
+        custom:'objectId'
 
     },
     schoolId: {
         type: 'String',
         length: {min: 12, max:250},
-        path:'schoolId'
-
+        path:'schoolId',
+        custom:'objectId'
     },
     paragraph: {
         type: 'String',

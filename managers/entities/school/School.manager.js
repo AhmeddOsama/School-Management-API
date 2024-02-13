@@ -54,7 +54,7 @@ module.exports = class School {
                     selfHandleResponse:{
                         "ok": false,
                         "message": "Invalid School or Admin",
-                        "code":409
+                        "code":404
                     }
                 }
         }
@@ -77,7 +77,7 @@ module.exports = class School {
                 selfHandleResponse:{
                     "ok": false,
                     "message": "Invalid School or Classoom!",
-                    "code":401
+                    "code":404
                 }
             }
         }
@@ -104,7 +104,7 @@ module.exports = class School {
                     selfHandleResponse:{
                         "ok": false,
                         "message": "Invalid School or Classoom!",
-                        "code":401
+                        "code":404
                     }
                 }
             }
@@ -127,11 +127,13 @@ module.exports = class School {
                 }
             }
     }
-    async  deleteSchool({__longToken,__isAuthorised,__protect,__validate, __device, schoolId }) {
-        
-        const result = await  this.mongomodels.school.deleteOne({ _id: schoolId });
+    async  deleteSchool({__longToken,__isAuthorised,__protect,__validateQuery }) {
+        const queryParams = __validateQuery
 
-        if (result.deletedCount === 0) {
+        const school = await this.mongomodels.school.findById(__validateQuery.schoolId);
+
+
+        if (!school) {
             return  {
                 selfHandleResponse:{
                     "ok": false,
@@ -140,7 +142,8 @@ module.exports = class School {
                 }
             }
         }
-
+        const result = await  this.mongomodels.school.deleteOne({ _id:school._id});
+ 
         return  {
             selfHandleResponse:{
                 "ok": true,
