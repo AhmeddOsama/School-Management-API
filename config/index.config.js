@@ -19,7 +19,7 @@ const OYSTER_PREFIX                    = process.env.OYSTER_PREFIX || 'none';
 const CACHE_REDIS                      = process.env.CACHE_REDIS || REDIS_URI;
 const CACHE_PREFIX                     = process.env.CACHE_PREFIX || `${SERVICE_NAME}:ch`;
 
-const MONGO_URI                        = process.env.MONGO_URI || `mongodb://localhost:27017/${SERVICE_NAME}`;
+const MONGO_URI                        = process.env.MONGO_URI ||"mongodb+srv://ahmeddosama1:IvlqADQkOvuF481w@cluster1.hivpfd0.mongodb.net/?retryWrites=true&w=majority" //added this only for deployment purposes;
 const config                           = require(`./envs/${ENV}.js`);
 const LONG_TOKEN_SECRET                = process.env.LONG_TOKEN_SECRET || null;
 const SHORT_TOKEN_SECRET               = process.env.SHORT_TOKEN_SECRET || null;
