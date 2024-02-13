@@ -42,8 +42,9 @@ module.exports = class Student {
         };
     }
 
-    async  deleteStudent({__longToken,__isAuthorised,__validate , studentId }) {
-        const result = await  this.mongomodels.student.deleteOne({ _id: studentId });
+    async  deleteStudent({__longToken,__isAuthorised,__validateQuery  }) {
+        const queryParams = __validateQuery
+        const result = await  this.mongomodels.student.deleteOne({ _id: queryParams.studentId });
 
         if (result.deletedCount === 0) {
             return  {
