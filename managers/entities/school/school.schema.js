@@ -27,12 +27,12 @@ module.exports = {
             required: true,
         },
     ],
-    getClassroomsInSchool: [
-        {
-            model: 'schoolId',
-            required: true,
-        },
-    ],
+    // getClassroomsInSchool: [
+    //     {
+    //         model: 'schoolId',
+    //         required: true,
+    //     },
+    // ],
     deleteSchool: [
         {
             model: 'schoolId',
