@@ -47,16 +47,15 @@ module.exports = class User {
         }    
     }
 
-    async deleteUser({__longToken,_validate,username}){
+    async deleteUser({__longToken,__validateQuery}){
         const decoded = __longToken
-        const body= {username}
-
-        if(decoded.userKey!=username){
+        const queryParams = __validateQuery
+        if(decoded.userKey!=queryParams.username){
             return  {
                 selfHandleResponse:{
                     "ok": false,
                     "message": "Forbidden",
-                    "data":{userDetails,longToken},
+                    "data":"",
                     "code":403
                 }
             }         }
