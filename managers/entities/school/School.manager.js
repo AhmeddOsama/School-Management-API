@@ -82,8 +82,8 @@ module.exports = class School {
             }
         }
 
-        school.classrooms.push(classroom);
-        await school.save();
+        classroom.school = school._id
+        await classroom.save();
         const { __v,  ...schoolDetails } = school.toObject();
         return {
             selfHandleResponse:{
