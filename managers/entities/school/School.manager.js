@@ -9,10 +9,18 @@ module.exports = class School {
         this.validators          = validators; 
         this.mongomodels         = mongomodels;
         this.httpExposed         = ['put=addSchoolAdmin','get=getClassroomsInSchool','createSchool','put=addClassroomToSchool','delete=removeClassroomFromSchool','delete=deleteSchool','get=getSchools'];
-        this.authorised          = ['superadmin']
+        this.authorised          = ['superadmin','school admin']
+        this.protection          = {
+            createSchool:['superadmin'],
+            getClassroomsInSchool:['superadmin','school admin'],
+            addSchoolAdmin:['superadmin'],
+            addClassroomToSchool:['admin'],
+            removeClassroomFromSchool:['admin'],
+            deleteSchool:['admin']
+        }   
     }
 
-    async createSchool({__longToken,__isAuthorised,__validate, __device,name}){
+    async createSchool({__longToken,__isAuthorised,__protect,__validate, __device,name}){
         const existingSchool = await this.mongomodels.school.findOne({ name:name })
 
         if(existingSchool){
@@ -32,7 +40,7 @@ module.exports = class School {
             schoolDetails, 
         };
     }
-    async addSchoolAdmin({__longToken,__isAuthorised,__validate,name,username}){
+    async addSchoolAdmin({__longToken,__isAuthorised,__protect,__validate,name,username}){
         const school = await this.mongomodels.school.findOne({ name:name })
         const admin = await this.mongomodels.user.findOne({username })
         if(!school||!admin||admin.role!='school admin'){
@@ -54,7 +62,7 @@ module.exports = class School {
             }
         }
     }
-    async addClassroomToSchool({__longToken,__isAuthorised,__validate,classroomId,schoolId}){
+    async addClassroomToSchool({__longToken,__isAuthorised,__protect,__validate,classroomId,schoolId}){
         const body = {classroomId,schoolId};
         const classroom = await this.mongomodels.Classroom.findById(classroomId);
         const school =  await this.mongomodels.school.findById(schoolId);
@@ -75,7 +83,7 @@ module.exports = class School {
             schoolDetails, 
         };
     }   
-    async  removeClassroomFromSchool({__longToken,__isAuthorised,__validate, classroomId, schoolId }) {
+    async  removeClassroomFromSchool({__longToken,__isAuthorised,__protect,__validate, classroomId, schoolId }) {
     
             const classroom = await this.mongomodels.Classroom.findById(classroomId);
             const school = await this.mongomodels.school.findById(schoolId);
@@ -104,7 +112,7 @@ module.exports = class School {
             };
         
     }
-    async  deleteSchool({__longToken,__isAuthorised,__validate, __device, schoolId }) {
+    async  deleteSchool({__longToken,__isAuthorised,__protect,__validate, __device, schoolId }) {
         
         const result = await  this.mongomodels.school.deleteOne({ _id: schoolId });
 
@@ -122,7 +130,7 @@ module.exports = class School {
         };
     
 }
-async  getSchools({__longToken,__isAuthorised }) {
+async  getSchools({__longToken,__isAuthorised ,__protect}) {
     const result = await  this.mongomodels.school.find({ }).select('-__v -classrooms')
     return {
         result
