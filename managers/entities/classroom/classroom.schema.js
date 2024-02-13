@@ -8,22 +8,13 @@ module.exports = {
         },
         
     ],
-    addStudentToClassrooom: [
-        {
-            model: 'classroomId',
-            required: true,
-        },
-        {
-            model: 'studentId',
-            required: true,
-        },
-    ],
+  
     deleteClassroom:[ {
         model: 'classroomId',
         required: true,
     },
 ],
-addClassroomToSchool: [
+updateClassroomSchool: [
     {
         model: 'classroomId',
         required: true,
@@ -33,16 +24,7 @@ addClassroomToSchool: [
         required: true,
     },
 ],
-removeClassroomFromSchool: [
-    {
-        model: 'classroomId',
-        required: true,
-    },
-    {
-        model: 'schoolId',
-        required: true,
-    },
-],
+
 }
 
 
