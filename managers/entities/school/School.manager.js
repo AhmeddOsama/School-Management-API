@@ -71,7 +71,7 @@ module.exports = class School {
     async addClassroomToSchool({__longToken,__isAuthorised,__protect,__validate,classroomId,schoolId}){
         const body = {classroomId,schoolId};
         const classroom = await this.mongomodels.Classroom.findById(classroomId);
-        const school =  await this.mongomodels.school.findOne({ _id: schoolId, admins: __longToken.userId });//to make sure this admin is assigned to this school
+        const school =  await this.mongomodels.school.findOne({ _id: schoolId });//to make sure this admin is assigned to this school
         if (!classroom || !school) {
             return {
                 selfHandleResponse:{
@@ -82,8 +82,8 @@ module.exports = class School {
             }
         }
 
-        school.classrooms.push(classroom);
-        await school.save();
+        classroom.school = school._id
+        await classroom.save();
         const { __v,  ...schoolDetails } = school.toObject();
         return {
             selfHandleResponse:{
