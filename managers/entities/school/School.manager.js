@@ -8,7 +8,7 @@ module.exports = class School {
         this.cortex              = cortex;
         this.validators          = validators; 
         this.mongomodels         = mongomodels;
-        this.httpExposed         = ['put=addSchoolAdmin','get=getClassroomsInSchool','createSchool','put=addClassroomToSchool','delete=removeClassroomFromSchool','delete=deleteSchool','get=getSchools'];
+        this.httpExposed         = ['put=addSchoolAdmin','createSchool','put=addClassroomToSchool','delete=removeClassroomFromSchool','delete=deleteSchool','get=getSchools'];
         this.authorised          = ['superadmin','school admin']
         this.protection          = {
             createSchool:['superadmin'],
@@ -172,15 +172,15 @@ async  getSchools({__longToken,__isAuthorised ,__protect}) {
     }
 
 }
-async  getClassroomsInSchool({__longToken,__isAuthorised,__validate, __device,schoolId }) {
-    const result = await  this.mongomodels.school.find({ _id : schoolId,admins: __longToken.userId  }).select('classrooms').populate('classrooms').populate('admins')
-    return {
-        selfHandleResponse:{
-            "ok": true,
-            "message": "",
-            "code":200,
-            "data":result
-        }
-    }
-}
+// async  getClassroomsInSchool({__longToken,__isAuthorised,__validate, __device,schoolId }) {
+//     const result = await  this.mongomodels.school.find({ _id : schoolId,admins: __longToken.userId  }).select('classrooms').populate('classrooms').populate('admins')
+//     return {
+//         selfHandleResponse:{
+//             "ok": true,
+//             "message": "",
+//             "code":200,
+//             "data":result
+//         }
+//     }
+// }
 }
