@@ -12,11 +12,12 @@ module.exports = class School {
         this.authorised          = ['superadmin','school admin']
         this.protection          = {
             createSchool:['superadmin'],
-            getClassroomsInSchool:['superadmin','school admin'],
+            getClassroomsInSchool:['school admin'],
             addSchoolAdmin:['superadmin'],
             addClassroomToSchool:['school admin'],
             removeClassroomFromSchool:['school admin'],
-            deleteSchool:['school admin']
+            deleteSchool:['superadmin'],
+            getSchools:['superadmin','school admin']
         }   
     }
 
@@ -37,8 +38,13 @@ module.exports = class School {
         const { __v,  ...schoolDetails } = createdSchool.toObject();
 
         return {
-            schoolDetails, 
-        };
+            selfHandleResponse:{
+                "ok": true,
+                "message": "Success",
+                "data":schoolDetails,
+                "code":200
+            }
+        }
     }
     async addSchoolAdmin({__longToken,__isAuthorised,__protect,__validate,name,username}){
         const school = await this.mongomodels.school.findOne({ name:name })
@@ -65,9 +71,9 @@ module.exports = class School {
     async addClassroomToSchool({__longToken,__isAuthorised,__protect,__validate,classroomId,schoolId}){
         const body = {classroomId,schoolId};
         const classroom = await this.mongomodels.Classroom.findById(classroomId);
-        const school =  await this.mongomodels.school.findById(schoolId);
+        const school =  await this.mongomodels.school.findOne({ _id: schoolId, admins: __longToken.userId });//to make sure this admin is assigned to this school
         if (!classroom || !school) {
-            return result = {
+            return {
                 selfHandleResponse:{
                     "ok": false,
                     "message": "Invalid School or Classoom!",
@@ -117,7 +123,7 @@ module.exports = class School {
         const result = await  this.mongomodels.school.deleteOne({ _id: schoolId });
 
         if (result.deletedCount === 0) {
-            return result = {
+            return  {
                 selfHandleResponse:{
                     "ok": false,
                     "message": "Invalid School ",
@@ -126,21 +132,43 @@ module.exports = class School {
             }
         }
 
-        return {
-        };
+        return  {
+            selfHandleResponse:{
+                "ok": true,
+                "message": "Deleted Succsesfully",
+                "code":200
+            }
+        }
     
 }
 async  getSchools({__longToken,__isAuthorised ,__protect}) {
-    const result = await  this.mongomodels.school.find({ }).select('-__v -classrooms')
-    return {
-        result
-    };
+    var result = {}
+    if(__longToken.role=='superadmin'){
+         result = await  this.mongomodels.school.find({ }).select('-__v').populate('classrooms').populate('admins').populate({ path: 'admins', select: '-password' })
+    }
+    else{
+         result = await  this.mongomodels.school.find({ admins: __longToken.userId}).select('-__v').populate('classrooms').populate({ path: 'admins', select: '-password' })
+
+    }
+    return  {
+        selfHandleResponse:{
+            "ok": true,
+            "message": " ",
+            "data":result,
+            "code":200
+        }
+    }
 
 }
 async  getClassroomsInSchool({__longToken,__isAuthorised,__validate, __device,schoolId }) {
-    const result = await  this.mongomodels.school.find({ schoolId }).select('classrooms').populate('classrooms') 
+    const result = await  this.mongomodels.school.find({ _id : schoolId,admins: __longToken.userId  }).select('classrooms').populate('classrooms').populate('admins')
     return {
-        result
-    };
+        selfHandleResponse:{
+            "ok": true,
+            "message": "",
+            "code":200,
+            "data":result
+        }
+    }
 }
 }

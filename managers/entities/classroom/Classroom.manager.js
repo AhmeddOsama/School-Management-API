@@ -11,7 +11,7 @@ module.exports = class Clasroom {
         this.authorised          = ['school admin']
     }
 
-    async createClassroom({__longToken,__isAuthorised, __device,name}){
+    async createClassroom({__longToken,__isAuthorised,name}){
         const classroom = {name};
         let result = await this.validators.classroom.createClassroom(classroom);
         if(result) return result;
@@ -31,7 +31,7 @@ module.exports = class Clasroom {
         };
     }
 
-    async addStudentToClassrooom({__longToken,__isAuthorised, __device,classroomId,studentId}){
+    async addStudentToClassrooom({__longToken,__isAuthorised,classroomId,studentId}){
         const body = {classroomId,studentId};
         let result = await this.validators.classroom.addStudentToClassrooom(body);
         if(result) return result;
