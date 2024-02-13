@@ -14,9 +14,9 @@ module.exports = class School {
             createSchool:['superadmin'],
             getClassroomsInSchool:['superadmin','school admin'],
             addSchoolAdmin:['superadmin'],
-            addClassroomToSchool:['admin'],
-            removeClassroomFromSchool:['admin'],
-            deleteSchool:['admin']
+            addClassroomToSchool:['school admin'],
+            removeClassroomFromSchool:['school admin'],
+            deleteSchool:['school admin']
         }   
     }
 
