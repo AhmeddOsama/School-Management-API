@@ -3,7 +3,7 @@ module.exports = ({ meta, config, managers,validators }) =>{
         const moduleName = req.params.moduleName
         const fnName = req.params.fnName
         let result = await validators[moduleName][fnName](req.query);
-        if(result)  return managers.responseDispatcher.dispatch(res, {ok: false, code:401, errors: result});
+        if(result)  return managers.responseDispatcher.dispatch(res, {ok: false, code:400, errors: result});
         next(req.query);
     }
 }
