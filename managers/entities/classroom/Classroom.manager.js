@@ -7,7 +7,7 @@ module.exports = class Clasroom {
         this.cortex              = cortex;
         this.validators          = validators; 
         this.mongomodels         = mongomodels;
-        this.httpExposed         = ['createClassroom','put=addStudentToClassrooom','delete=deleteClassroom'];
+        this.httpExposed         = ['get=getClassroomsinSchools','get=getClassrooms','put=addClassroomToSchool','put=removeClassroomFromSchool','createClassroom','put=addStudentToClassrooom','delete=deleteClassroom'];
         this.authorised          = ['school admin']
     }
 
@@ -93,5 +93,100 @@ module.exports = class Clasroom {
             }
         }
     
+}
+async addClassroomToSchool({__longToken,__isAuthorised,__validate,classroomId,schoolId}){
+    const body = {classroomId,schoolId};
+    const classroom = await this.mongomodels.Classroom.findById(classroomId);
+    const school =  await this.mongomodels.school.findOne({ _id: schoolId, admins: __longToken.userId });//to make sure this admin is assigned to this school
+    if (!classroom || !school) {
+        return {
+            selfHandleResponse:{
+                "ok": false,
+                "message": "Invalid School or Classoom!",
+                "code":404
+            }
+        }
+    }
+    if(classroom.school && classroom.school.toString()==school._id.toString()){
+       return {
+                selfHandleResponse:{
+                    "ok": false,
+                    "message": "School Already Exists!",
+                    "code":409
+                }
+            }
+    }
+    
+    classroom.school = school._id
+    await classroom.save();
+    const { __v,  ...classroomDetails } = classroom.toObject();
+    return {
+        selfHandleResponse:{
+            "ok": true,
+            "message": " ",
+            "data":classroomDetails,
+            "code":200
+        }
+    }
+}   
+async  removeClassroomFromSchool({__longToken,__isAuthorised,__validate, classroomId, schoolId }) {
+
+        const classroom = await this.mongomodels.Classroom.findById(classroomId);
+        const school = await this.mongomodels.school.findOne({ _id: schoolId, admins: __longToken.userId });
+        
+        if (!classroom || !school || classroom.school.toString()!=school._id.toString()) {
+            return   {
+                selfHandleResponse:{
+                    "ok": false,
+                    "message": "Invalid School or Classoom!",
+                    "code":404
+                }
+            }
+        }
+
+        await this.mongomodels.Classroom.updateOne({ _id: classroomId }, { $unset: { school: 1 } });
+        const updatedClassroom = await this.mongomodels.Classroom.findById(classroomId);
+
+        const {  __v, ...classroomDetails } = updatedClassroom.toObject();
+
+        return {
+            selfHandleResponse:{
+                "ok": true,
+                "message": " ",
+                "data":classroomDetails,
+                "code":200
+            }
+        }
+}
+
+async  getClassroomsinSchools({__longToken,__isAuthorised }) {
+    var result = {}
+    const schools = await this.mongomodels.school.find({ admins: __longToken.userId }).select('_id');
+    const schoolIds = schools.map(school => school._id);
+    const classrooms = await this.mongomodels.Classroom.find({ school: { $in: schoolIds } });
+    
+    return  {
+        selfHandleResponse:{
+            "ok": true,
+            "message": " ",
+            "data":classrooms,
+            "code":200
+        }
+    }
+
+}
+async  getClassrooms({__longToken,__isAuthorised }) {
+    var result = {}
+    const classrooms = await this.mongomodels.Classroom.find({ school: null })
+    
+    return  {
+        selfHandleResponse:{
+            "ok": true,
+            "message": " ",
+            "data":classrooms,
+            "code":200
+        }
+    }
+
 }
 }

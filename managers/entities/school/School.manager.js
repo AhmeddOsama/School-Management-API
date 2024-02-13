@@ -8,7 +8,7 @@ module.exports = class School {
         this.cortex              = cortex;
         this.validators          = validators; 
         this.mongomodels         = mongomodels;
-        this.httpExposed         = ['put=addSchoolAdmin','createSchool','put=addClassroomToSchool','delete=removeClassroomFromSchool','delete=deleteSchool','get=getSchools'];
+        this.httpExposed         = ['put=addSchoolAdmin','createSchool','delete=deleteSchool','get=getSchools'];
         this.authorised          = ['superadmin','school admin']
         this.protection          = {
             createSchool:['superadmin'],
@@ -68,65 +68,7 @@ module.exports = class School {
             }
         }
     }
-    async addClassroomToSchool({__longToken,__isAuthorised,__protect,__validate,classroomId,schoolId}){
-        const body = {classroomId,schoolId};
-        const classroom = await this.mongomodels.Classroom.findById(classroomId);
-        const school =  await this.mongomodels.school.findOne({ _id: schoolId });//to make sure this admin is assigned to this school
-        if (!classroom || !school) {
-            return {
-                selfHandleResponse:{
-                    "ok": false,
-                    "message": "Invalid School or Classoom!",
-                    "code":404
-                }
-            }
-        }
 
-        classroom.school = school._id
-        await classroom.save();
-        const { __v,  ...schoolDetails } = school.toObject();
-        return {
-            selfHandleResponse:{
-                "ok": true,
-                "message": " ",
-                "data":schoolDetails,
-                "code":200
-            }
-        }
-    }   
-    async  removeClassroomFromSchool({__longToken,__isAuthorised,__protect,__validate, classroomId, schoolId }) {
-    
-            const classroom = await this.mongomodels.Classroom.findById(classroomId);
-            const school = await this.mongomodels.school.findById(schoolId);
-
-            if (!classroom || !school) {
-                return result = {
-                    selfHandleResponse:{
-                        "ok": false,
-                        "message": "Invalid School or Classoom!",
-                        "code":404
-                    }
-                }
-            }
-    
-            const index = school.classrooms.indexOf(classroomId);
-            if (index !== -1) {
-                school.classrooms.splice(index, 1);
-            }
-    
-            await school.save();
-    
-            const {  __v, ...schoolDetails } = school.toObject();
-    
-            return {
-                selfHandleResponse:{
-                    "ok": true,
-                    "message": " ",
-                    "data":schoolDetails,
-                    "code":200
-                }
-            }
-    }
     async  deleteSchool({__longToken,__isAuthorised,__protect,__validateQuery }) {
         const queryParams = __validateQuery
 
@@ -156,10 +98,10 @@ module.exports = class School {
 async  getSchools({__longToken,__isAuthorised ,__protect}) {
     var result = {}
     if(__longToken.role=='superadmin'){
-         result = await  this.mongomodels.school.find({ }).select('-__v').populate('classrooms').populate('admins').populate({ path: 'admins', select: '-password' })
+         result = await  this.mongomodels.school.find({ }).select('-__v').populate('admins').populate({ path: 'admins', select: '-password' })
     }
     else{
-         result = await  this.mongomodels.school.find({ admins: __longToken.userId}).select('-__v').populate('classrooms').populate({ path: 'admins', select: '-password' })
+         result = await  this.mongomodels.school.find({ admins: __longToken.userId}).select('-__v').populate({ path: 'admins', select: '-password' })
 
     }
     return  {
