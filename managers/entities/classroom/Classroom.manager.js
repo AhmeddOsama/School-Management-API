@@ -44,7 +44,7 @@ module.exports = class Clasroom {
                 selfHandleResponse:{
                     "ok": false,
                     "message": "Invalid Student or Classoom!",
-                    "code":401
+                    "code":404
                 }
             }
         }
@@ -71,8 +71,9 @@ module.exports = class Clasroom {
         };
     }
 
-    async  deleteClassroom({__longToken,__isAuthorised,__validate , classroomId }) {
-        const result = await  this.mongomodels.Classroom.deleteOne({ _id: classroomId });
+    async  deleteClassroom({__longToken,__isAuthorised,__validateQuery , classroomId }) {
+        const params = __validateQuery
+        const result = await  this.mongomodels.Classroom.deleteOne({ _id: params.classroomId });
 
         if (result.deletedCount === 0) {
             return  {
