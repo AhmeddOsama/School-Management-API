@@ -22,8 +22,13 @@ module.exports = class User {
         // console.log('asdas',this.mongomodels)
         const existingUser = await this.mongomodels.user.findOne({ username })
         if(existingUser){
-            throw Error('User exists') //to handle errors
-        }
+            return {
+                selfHandleResponse:{
+                    "ok": false,
+                    "message": "User Already Exists",
+                    "code":409
+                }
+            }           }
         // Creation Logic
         const hashedPassword = await bcrypt.hash(user.password, 10);
         user.password=hashedPassword
@@ -32,19 +37,29 @@ module.exports = class User {
         let longToken = this.tokenManager.genLongToken({userId: createdUser._id, userKey: createdUser.username ,role:createdUser.role});
 
 
-        return {
-            userDetails, 
-            longToken 
-        };
+        return  {
+            selfHandleResponse:{
+                "ok": true,
+                "message": "",
+                "data":{userDetails,longToken},
+                "code":200
+            }
+        }    
     }
 
-    async deleteUser({_validate,__longToken,username}){
+    async deleteUser({__longToken,_validate,username}){
         const decoded = __longToken
         const body= {username}
 
         if(decoded.userKey!=username){
-                throw Error('User Can only delete his user')
-        }
+            return  {
+                selfHandleResponse:{
+                    "ok": false,
+                    "message": "Forbidden",
+                    "data":{userDetails,longToken},
+                    "code":403
+                }
+            }         }
         const result = await  this.mongomodels.user.deleteOne({ _id: decoded.userId });
         return {
             
@@ -89,7 +104,7 @@ module.exports = class User {
         const schools = await this.mongomodels.school.find({ admins: decoded.userId });        
         return {
             selfHandleResponse:{
-                "ok": false,
+                "ok": true,
                 "message": "",
                 "data":schools,
                 "code":200
