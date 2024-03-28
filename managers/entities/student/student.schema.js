@@ -32,7 +32,17 @@ module.exports = {
             model: 'studentId',
             required: true,
         }
-    ]
+    ],
+    updateStudentClassroom: [
+        {
+            model: 'classroomId',
+            required:true,
+        },
+        {
+            model: 'studentId',
+            required: true,
+        },
+    ],
 }
 
 

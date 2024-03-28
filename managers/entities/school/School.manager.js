@@ -105,10 +105,10 @@ module.exports = class School {
 async  getSchools({__longToken,__isAuthorised ,__protect}) {
     var result = {}
     if(__longToken.role=='superadmin'){
-         result = await  this.mongomodels.school.find({ }).select('-__v').populate('classrooms').populate('admins').populate({ path: 'admins', select: '-password' })
+         result = await  this.mongomodels.school.find({ }).select('-__v').populate('admins').populate({ path: 'admins', select: '-password' })
     }
     else{
-         result = await  this.mongomodels.school.find({ admins: __longToken.userId}).select('-__v').populate('classrooms').populate({ path: 'admins', select: '-password' })
+         result = await  this.mongomodels.school.find({ admins: __longToken.userId}).select('-__v').populate({ path: 'admins', select: '-password' })
 
     }
     return  {
