@@ -169,9 +169,11 @@ module.exports = class ApiHandler {
             } else {
                 
                 if(result.errors){
-                    return this.managers.responseDispatcher.dispatch(res, {ok: false, errors: result.errors});
+                    console.log(result.errors) //should log to log file instead
+                    return this.managers.responseDispatcher.dispatch(res, {ok: false, message: 'Internal Server Error',code:500});
                 } else if(result.error){
-                    return this.managers.responseDispatcher.dispatch(res, {ok: false, message: result.error});
+                    console.log(result.error) //should log to log file instead
+                    return this.managers.responseDispatcher.dispatch(res, {ok: false, message:'Internal Server Error',code:500});
                 } else {
                     return this.managers.responseDispatcher.dispatch(res, {ok:true, data: result});
                 }

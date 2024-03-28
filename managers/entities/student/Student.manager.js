@@ -8,7 +8,7 @@ module.exports = class Student {
         this.validators          = validators; 
         this.mongomodels         = mongomodels;
         this.tokenManager        = managers.token;
-        this.httpExposed         = ['createStudent','get=getAll','delete=deleteStudent'];
+        this.httpExposed         = ['createStudent','get=getFreeStudents','delete=deleteStudent','put=updateStudent'];
         this.authorised          = ['school admin']
     }
 
@@ -30,14 +30,64 @@ module.exports = class Student {
         };
     }
 
-    async getAll({__longToken,__isAuthorised}){
-           const students = await this.mongomodels.student.find().select('-__v')
+    async getFreeStudents({__longToken,__isAuthorised}){
+           const students = await this.mongomodels.student.find({ classroomId: { $exists: false } }).select('-__v')
            return {
             selfHandleResponse:{
                 "ok": true,
                 "message": "",
                 "code":200,
                 "data":students
+            }        
+        };
+    }
+
+    
+    async updateStudent({__longToken,__isAuthorised ,__validate, age,name,classroomId}){
+        const updateStudentBody = {age,classroomId}
+        const student = await this.mongomodels.student.find({ name: name })
+        if(!student){
+             return {
+                selfHandleResponse:{
+                    "ok": false,
+                    "message": "Invalid Student!",
+                    "code":404
+                }
+            }
+        }
+        if(student.classroomId){
+            const classroom = await this.mongomodels.Classroom.findById(student.classroomId);
+
+            const school = await this.mongomodels.school.find({ admins: userId,_id:classroom.schoolId })
+            if(!school){
+                return {
+                    selfHandleResponse:{
+                        "ok": false,
+                        "message": "Invalid School!",
+                        "code":404
+                    }
+                }
+            }
+        }
+        const updatedStudent = await this.mongomodels.student.findOneAndUpdate({ name: name },updateStudentBody,{ new: true } )
+        if(!updatedStudent){
+            return {
+                selfHandleResponse:{
+                    "ok": false,
+                    "message": "Invalid Student!",
+                    "code":404
+                }
+            }
+        }
+        const { __v,  ...studentDetails } = updatedStudent.toObject();
+
+
+        return {
+            selfHandleResponse:{
+                "ok": true,
+                "message": "Successfully Updated Student ",
+                "code":200,
+                data:studentDetails
             }        
         };
     }

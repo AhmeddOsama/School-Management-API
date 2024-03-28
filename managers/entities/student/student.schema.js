@@ -9,6 +9,21 @@ module.exports = {
         {
             model: 'age',
             required: true,
+        },
+
+    ],
+
+    updateStudent: [
+        {
+            model: 'name',
+            required: true,
+        },
+        {
+            model: 'age',
+        },
+        {
+        model: 'classroomId',
+
         }
     ],
     deleteStudent:[

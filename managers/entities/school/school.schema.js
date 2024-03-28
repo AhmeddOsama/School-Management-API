@@ -7,32 +7,6 @@ module.exports = {
             required: true,
         },
     ],
-    addClassroomToSchool: [
-        {
-            model: 'classroomId',
-            required: true,
-        },
-        {
-            model: 'schoolId',
-            required: true,
-        },
-    ],
-    removeClassroomFromSchool: [
-        {
-            model: 'classroomId',
-            required: true,
-        },
-        {
-            model: 'schoolId',
-            required: true,
-        },
-    ],
-    // getClassroomsInSchool: [
-    //     {
-    //         model: 'schoolId',
-    //         required: true,
-    //     },
-    // ],
     deleteSchool: [
         {
             model: 'schoolId',
